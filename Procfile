@@ -1,1 +1,2 @@
-web: node app.js
+web: node database_setup/migrate.js
+web: node api_server/app.js
