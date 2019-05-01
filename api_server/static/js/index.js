@@ -85,7 +85,7 @@ let rowBuild = function(clusterSize, clusterArrayPull){
     let obj2 = clusterArrayPull.values[i];
     let el = obj2.element;
     let fileName = obj2.filename;
-    let clusterImagePath = './localhost:3000/images/' + el + '/' + fileName;
+    let clusterImagePath = '/images/' + el + '/' + fileName;
     let clusterImage = clusterImagePath.replace("xyz", "jpg");
     let rawRelEnergy = (lowestEnergy - obj2.energy) * 100;
     let relEnergy = Math.round(rawRelEnergy * 100) / 100;
@@ -104,20 +104,10 @@ let rowBuild = function(clusterSize, clusterArrayPull){
     var relEnergyLabel = document.createElement("div");
     relEnergyLabel.innerHTML = "Rel Energy = " + relEnergy + " meV";
     var relEnergyPerAtomLabel = document.createElement("div");
-    relEnergyPerAtomLabel.innerHTML = "RE / atom = " + baseEnergy + " meV";
-    var baseEnergyLabel = document.createElement("div");
-    baseEnergyLabel.innerHTML = "Energy = " + basePerAtom + " eV";
-    var baseEnergyPerAtomLabel = document.createElement("div");
-    baseEnergyPerAtomLabel.innerHTML = "Energy / atom = " + relPerAtom + " eV";
+    relEnergyPerAtomLabel.innerHTML = "RE / atom = " + relPerAtom + " meV";
     cell.appendChild(imageAdd);
-    if (i>0){
-      cell.appendChild(relEnergyLabel);
-      cell.appendChild(relEnergyPerAtomLabel);
-    };
-    if(i===0){
-      cell.appendChild(baseEnergyLabel);
-      cell.appendChild(baseEnergyPerAtomLabel);
-    };
+    cell.appendChild(relEnergyLabel);
+    cell.appendChild(relEnergyPerAtomLabel);
     row.appendChild(cell);
   };
 };
@@ -125,7 +115,6 @@ let rowBuild = function(clusterSize, clusterArrayPull){
 
 // fetch data and run
 let correlations = function(x) {
-  debugger;
   let id = x.id;
   currentElement = id;
   let elUpper = id.charAt(0).toUpperCase();
@@ -143,17 +132,19 @@ let correlations = function(x) {
   tableBuild(id);
 }
 
-let tableBuild = function(id){
+let tableBuild = async function(id){
   document.getElementById('cluster-table').style.display = "flex";
   document.getElementById('pcc-box').style.display = "flex";
   for (var i = 3; i<56; i++){
     let clusterSize = i;
+
     fetch('xyz/' + id + '/' + i)
     .then(function(response) {
       return response.json();
     })
     .then(function(myJson) {
       rowBuild(clusterSize, myJson);
-    });
+    })
+    .catch(error => console.error('Error:', error));
   };
 };
