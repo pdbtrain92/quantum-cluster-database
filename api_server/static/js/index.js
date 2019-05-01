@@ -4,34 +4,6 @@ let overlayClose = function(){
   document.getElementById('overlay').style.display = "none";
 };
 
-//define class var from correlation data value
-let defineCorrClass = function(corrData){
-  let x = parseFloat(corrData);
-  if (x>=-1 && x<-.8){
-    return ' _8-6';
-  } else if (x>=-.8 && x<-.6){
-    return ' _8-6';
-  } else if (x>=-.6 && x<-.4){
-    return ' _6-4';
-  } else if (x>=-.4 && x<-.2){
-    return ' _4-2';
-  } else if (x>=-.2 && x<0){
-    return ' _2-0';
-  } else if (x>=0 && x<.2){
-    return ' _0-2';
-  } else if (x>=.2 && x<.4){
-    return ' _2-4';
-  } else if (x>=.4 && x<.6){
-    return ' _4-6';
-  } else if (x>=.6 && x<.8){
-    return ' _6-8';
-  } else if (x>=.8 && x<=1){
-    return ' _8-1';
-  } else {
-    return;
-  };
-};
-
 //Loop through elements with data and set colors
 let correlationLoop = function(corrArray){
   for ( var i = 0; i < corrArray.values.length; i++) {
