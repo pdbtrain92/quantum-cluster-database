@@ -55,20 +55,27 @@ const Run = async () => {
   console.log('Correlation data inserted');
 
   await knex.truncate('xyz');
-  const xyzs = await parseAllXyzFilesInDir(path.resolve(__dirname, './data'));
-  console.log('Read XYZs from disk');
-  const xyzsMappedForDatabase = xyzs.map(file => {
-    return {
-      element: file.coordinates[0].element, // for now assume only the same elements bound together
-      filename: file.name,
-      raw: file.raw,
-      energy: file.energy,
-      cluster_size: file.clusterSize,
-      coordinates: JSON.stringify(file.coordinates)
-    }
+  await parseAllXyzFilesInDir(path.resolve(__dirname, './data'), async(xyzs) => {
+    console.log('Read XYZs from disk');
+    const xyzsMappedForDatabase = xyzs.map(file => {
+      /*if (Number.isFinite(Number(file.clusterSize))){
+        throw new Error(file.name + ' ' + file.clusterSize);
+      };*/
+        return {
+          element: file.coordinates[0].element, // for now assume only the same elements bound together
+          filename: file.name,
+          raw: file.raw,
+          energy: file.energy,
+          cluster_size: file.clusterSize,
+          coordinates: JSON.stringify(file.coordinates)
+        };
+    });
+    while (xyzsMappedForDatabase.length > 0) {
+      await knex('xyz').insert(xyzsMappedForDatabase.splice(0, 1));
+    };
+    console.log('XYZs loaded into postgres');
   });
-  await knex('xyz').insert(xyzsMappedForDatabase);
-  console.log('XYZs loaded into postgres')
+
   process.exit(0);
 }
 

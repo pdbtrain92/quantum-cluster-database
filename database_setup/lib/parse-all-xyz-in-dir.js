@@ -14,12 +14,12 @@ const readdir = util.promisify(fs.readdir);
 const categorizeListing = (basePath, listing, directories, files) => {
   return Promise.all(listing.map(async listingName => {
     const resolvedName = path.resolve(basePath, listingName);
-    if (path.parse(listingName).ext === '.xyz') {
-      files.push(resolvedName);
-    }
     const dirStat = await stat(resolvedName);
     if (dirStat.isDirectory()) {
       directories.push(resolvedName);
+    }
+    else if (path.parse(listingName).ext === '.xyz') {
+      files.push(resolvedName);
     }
   }));
 }
@@ -31,8 +31,11 @@ const detectAllXyzFilesInDirRecurse = async (parentDir, files) => {
   await Promise.all(directories.map(dir => detectAllXyzFilesInDirRecurse(dir, files)))
 }
 
-module.exports.parseAllXyzFilesInDir = async (dirPath) => {
+module.exports.parseAllXyzFilesInDir = async (dirPath, handler) => {
   const files = [];
   await detectAllXyzFilesInDirRecurse(dirPath, files);
-  return Promise.all(files.map(async file => parse(file)))
-}
+  while(files.length > 0) {
+    const results = await Promise.all(files.splice(0, 1000).map(file => parse(file)));
+    await handler(results.filter(el => !!el));
+  };
+};

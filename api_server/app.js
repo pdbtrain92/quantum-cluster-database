@@ -21,6 +21,8 @@ const express = require('express');
 const uuid = require('uuid');
 const { initialize } = require('./src/setup/knex');
 const app = express();
+const server = app.listen(5432, () => {});
+app.use(express.static("./static"));
 
 async function Run() {
   const knex = await initialize();
@@ -103,4 +105,7 @@ process.nextTick(() => {
     });
   });
 });
-
+app.get('/static',function(req,res)
+{
+    res.sendFile(path.join(__dirname, './static/index.html'));
+})
