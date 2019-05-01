@@ -36,9 +36,11 @@ let defineCorrClass = function(corrData){
 let correlationLoop = function(corrArray){
   for ( var i = 0; i < corrArray.values.length; i++) {
       let obj = corrArray.values[i];
-      let newClass = defineCorrClass(obj.correlation);
+      //let newClass = defineCorrClass(obj.correlation);
+      let newClass = "white-text";
       let transformedElement = document.getElementById(obj.right);
       transformedElement.className = 'element w-inline-block ' + newClass;
+      transformedElement.style.backgroundColor = obj.correlation;
       if (obj.left === obj.right){
         transformedElement.className = 'element current-element w-inline-block';
       };
@@ -53,7 +55,6 @@ let visualization = function(y) {
   let viewer = $3Dmol.createViewer( $('#viewer_3Dmoljs'), { backgroundColor: 'white' } );
   jQuery.ajax( xyzPath, {
     success: function(data) {
-      console.log(data);
       let v = viewer;
       v.addModel( data, "xyz" );                       /* load data */
       v.setStyle({}, {sphere: {color: 'spectrum'}});  /* style all atoms */
@@ -69,7 +70,7 @@ let visualization = function(y) {
 
 //set up row
 let rowBuild = function(clusterSize, clusterArrayPull){
-  let row = document.getElementById('table-row-' + clusterSize)
+  let row = document.getElementById('table-row-' + clusterSize);
   while (row.firstChild) {
     row.removeChild(row.firstChild);
   };
@@ -81,7 +82,7 @@ let rowBuild = function(clusterSize, clusterArrayPull){
   let lowestEnergy = firstCell.energy;
   //build cell
   //for (var i=0; i < clusterArrayPull.values.length; i++){ -> switch when slider is built
-  for (var i=0; i < 5; i++){
+  for (var i=0; i < clusterArrayPull.values.length; i++){
     let obj2 = clusterArrayPull.values[i];
     let el = obj2.element;
     let fileName = obj2.filename;

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const parser = require('node-csv-parse');
 
-const data = fs.readFileSync(path.resolve(__dirname, '../data/correlations_best_sort.csv')).toString('utf8');
+const data = fs.readFileSync(path.resolve(__dirname, '../data/correlations_best_sort_2.csv')).toString('utf8');
 
 const parsed = parser(data, ',');
 
