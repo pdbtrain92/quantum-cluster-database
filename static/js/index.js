@@ -73,9 +73,6 @@ let rowBuild = function(clusterSize, clusterArrayPull){
     let relEnergy = Math.round(rawRelEnergy * 100) / 100;
     let rawRelPerAtom = relEnergy / clusterSize;
     let relPerAtom = Math.round(rawRelPerAtom * 100) / 100;
-    let baseEnergy = Math.round(obj2.energy * 100) / 100;
-    let rawBasePerAtom = baseEnergy / clusterSize;
-    let basePerAtom = Math.round(rawBasePerAtom * 100) / 100;
     var cell = document.createElement("a");
     cell.setAttribute('class', 'cluster-table-item w-inline-block');
     cell.setAttribute('id', fileName);
@@ -141,7 +138,7 @@ let correlations = async function(x) {
     .then(function(myJson) {
       correlationLoop(myJson);
       var headerText = document.getElementById('hs-replace');
-      headerText.innerHTML = "<strong>Currently Selected: " + elText +'<strong>';
+      headerText.innerHTML = "<strong>Currently Selected: " + elText +'<strong>' + '  Scroll down to see clusters.';
     })
     .catch(e => console.log('Error:', e))
   await tableBuild(id);
