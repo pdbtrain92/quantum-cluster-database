@@ -22,7 +22,6 @@ const uuid = require('uuid');
 const { initialize } = require('./src/setup/knex');
 const app = express();
 const server = app.listen(5432, () => {});
-app.use(express.static("./static"));
 
 async function Run() {
   const knex = await initialize();
@@ -86,11 +85,15 @@ async function Run() {
       next(); // exec any post-middleware
     }
   });
-
   // post-middleware
   app.use((req, res, next) => {
-    logger.info(`${req.uuid} completed with status ${res.statusCode} in ${Date.now() - req.startTime}ms`);
+    if (res.headersSent) {
+      logger.info(`${req.uuid} completed with status ${res.statusCode} in ${Date.now() - req.startTime}ms`);
+    }
+    next();
   });
+
+  app.use(express.static(path.resolve(__dirname, "./static")));
 
   app.listen(config.port, () => {
     logger.info(`App listening on port ${config.port}`);
@@ -105,7 +108,3 @@ process.nextTick(() => {
     });
   });
 });
-app.get('/static',function(req,res)
-{
-    res.sendFile(path.join(__dirname, './static/index.html'));
-})
