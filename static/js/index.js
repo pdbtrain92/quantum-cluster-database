@@ -57,7 +57,7 @@ let rowBuild = function(clusterSize, clusterArrayPull){
   cellLabel.innerHTML = clusterSize;
   row.appendChild(cellLabel);
   clusterArrayPull.values.sort(function(a, b) {
-    return b.energy - a.energy;
+    return a.energy - b.energy;
   });
   let firstCell = clusterArrayPull.values[0];
   let lowestEnergy = firstCell.energy;
@@ -69,7 +69,7 @@ let rowBuild = function(clusterSize, clusterArrayPull){
     let fileName = obj2.filename;
     let clusterImagePath = '/images/' + el + '/' + fileName;
     let clusterImage = clusterImagePath.replace("xyz", "jpg");
-    let rawRelEnergy = (lowestEnergy - obj2.energy) * 100;
+    let rawRelEnergy = (obj2.energy - lowestEnergy) * 100;
     let relEnergy = Math.round(rawRelEnergy * 100) / 100;
     let rawRelPerAtom = relEnergy / clusterSize;
     let relPerAtom = Math.round(rawRelPerAtom * 100) / 100;
