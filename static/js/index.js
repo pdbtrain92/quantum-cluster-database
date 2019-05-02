@@ -56,6 +56,9 @@ let rowBuild = function(clusterSize, clusterArrayPull){
   cellLabel.setAttribute('class', 'cluster-size-label');
   cellLabel.innerHTML = clusterSize;
   row.appendChild(cellLabel);
+  clusterArrayPull.values.sort(function(a, b) {
+    return b.energy - a.energy;
+  });
   let firstCell = clusterArrayPull.values[0];
   let lowestEnergy = firstCell.energy;
   //build cell
