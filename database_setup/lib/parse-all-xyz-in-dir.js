@@ -35,7 +35,7 @@ module.exports.parseAllXyzFilesInDir = async (dirPath, handler) => {
   const files = [];
   await detectAllXyzFilesInDirRecurse(dirPath, files);
   while(files.length > 0) {
-    const results = await Promise.all(files.splice(0, 10000).map(file => parse(file)));
+    const results = await Promise.all(files.splice(0, 1000).map(file => parse(file)));
     await handler(results.filter(el => !!el));
   };
 };

@@ -25,6 +25,6 @@ if (module.parent) {
   // if being required in code, then expose the data in a "mapped" property
   module.exports.mapped = mapped
 } else {
-  // if just being executed directly, vomit the json
+  // if just being executed directly, log the json
   console.log(JSON.stringify(mapped, null, 2))
 }

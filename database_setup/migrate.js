@@ -49,18 +49,15 @@ const Run = async () => {
       correlation: correlationRow.correlation
     }
   });
-
   await knex.truncate('correlation');
+  console.log('Truncated existing correlation table');
   await knex('correlation').insert(correlations);
-  console.log('Correlation data inserted');
-
+  console.log('Correlation data loaded');
+  console.log('Truncated existing XYZ table data');
   await knex.truncate('xyz');
   await parseAllXyzFilesInDir(path.resolve(__dirname, './data'), async(xyzs) => {
-    console.log('Read XYZs from disk');
+    console.log(`Read ${xyzs.length} XYZs from disk`);
     const xyzsMappedForDatabase = xyzs.map(file => {
-      /*if (Number.isFinite(Number(file.clusterSize))){
-        throw new Error(file.name + ' ' + file.clusterSize);
-      };*/
         return {
           element: file.coordinates[0].element, // for now assume only the same elements bound together
           filename: file.name,
@@ -73,9 +70,9 @@ const Run = async () => {
     while (xyzsMappedForDatabase.length > 0) {
       await knex('xyz').insert(xyzsMappedForDatabase.splice(0, 1));
     };
-    console.log('XYZs loaded into postgres');
+    console.log('XYZ loaded into postgres');
   });
-
+  console.log('Completed successfully');
   process.exit(0);
 }
 

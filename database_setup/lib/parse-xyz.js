@@ -12,13 +12,13 @@ module.exports.parse = async (filepath) => {
   const filename = path.parse(filepath).base;
   const contents = (await readFile(filepath)).toString('utf8');
   if (contents.trim().length === 0){
-    console.log(filepath);
+    console.log('parsed file is empty', filepath);
     return;
   }
   const lines = contents.split('\n');
   const tempVar = lines[0].trim().match(/\d+/);
   if (!tempVar || !Number.isFinite(Number(tempVar[0]))){
-    console.log(filepath);
+    console.log('parsed file has unusual clusterSize, ignoring', filepath);
     return;
   };
   const clusterSize = tempVar[0];

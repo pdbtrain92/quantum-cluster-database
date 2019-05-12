@@ -1,3 +1,4 @@
+# This file is used for development
 version: '3.0'
 services:
   pg:
@@ -8,29 +9,3 @@ services:
       POSTGRES_DB: app_db
       POSTGRES_USER: application
       POSTGRES_PASSWORD: km8RiybqtMAh
-  app:
-    build: ./api_server
-    ports:
-      - "3000:3000" # bind <host>:<container>
-    entrypoint: node /workdir/app.js
-    volumes:
-      - ./static:/workdir/static
-    environment:
-      SERVER_PORT: 3000
-      DB_USERNAME: application
-      DB_PASSWORD: km8RiybqtMAh
-      DB_HOST: pg # docker compose makes "pg" resolve to the pg container
-      DB_PORT: 5432
-      DB_DATABASE: app_db
-  # only un-comment when you want to load the data
-  # loader:
-  #   image: node:10-slim
-  #   volumes:
-  #     - ./database_setup:/workdir
-  #   command: node /workdir/migrate.js
-  #   environment:
-  #     DB_USERNAME: application
-  #     DB_PASSWORD: km8RiybqtMAh
-  #     DB_HOST: pg # docker compose makes "pg" resolve to the pg container
-  #     DB_PORT: 5432
-  #     DB_DATABASE: app_db
