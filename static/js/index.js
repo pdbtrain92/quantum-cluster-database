@@ -94,7 +94,7 @@ let rowBuild = function(clusterSize, clusterArrayPull){
 let correlationCache = {};
 async function cachedLookupCorrelation(id) {
   if (!correlationCache[id]) {
-    const response = await fetch('/correlations/' + id, {
+    const response = await fetch('correlations/' + id, {
       signal: generalAbortController.signal
     });
     correlationCache[id] = await response.json();
