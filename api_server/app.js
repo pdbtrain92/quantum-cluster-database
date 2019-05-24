@@ -41,7 +41,7 @@ async function Run() {
     next();
   });
 
-  app.get('/correlations/:element', async (req, res, next) => {
+  app.get('correlations/:element', async (req, res, next) => {
     try {
       const values = await knex('correlation').where({ left_element: req.params.element }).select([
         'left_element as left',
