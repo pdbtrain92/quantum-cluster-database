@@ -1,10 +1,14 @@
 process.env.NODE_ENV = 'production'; // turn off any libraries defaulting to debug mode
 
+
 const fs = require('fs');
 const path = require('path');
 const dotenvPath = path.resolve(__dirname, '../.env');
 const logger = require('./src/setup/logging');
-
+const appEvents = require('./src/setup/app-events');
+if (appEvents.exiting) {
+  return;
+}
 // configures environment variables
 logger.info(`Loading environment from`, {dotenvPath});
 if (fs.existsSync(dotenvPath)) {
@@ -12,6 +16,8 @@ if (fs.existsSync(dotenvPath)) {
     path: dotenvPath
   })
 }
+// has to come after dotenv
+const dataLayer = require('./src/data-layer');
 
 const compression = require('compression');
 const cors = require('cors');
@@ -41,58 +47,55 @@ async function Run() {
     next();
   });
 
-  app.get('/correlations/:element', async (req, res, next) => {
-    try {
-      const values = await knex('correlation').where({ left_element: req.params.element }).select([
-        'left_element as left',
-        'right_element as right',
-        'correlation',
-      ]);
-      res.json({ values });
-    } catch (err) {
-      res.json({
-        error: {
-          code: 500,
-          message: 'Internal server error'
-        }
-      });
-    } finally {
-      next(); // exec any post-middleware
+  const makeHandler = (wrapped) => {
+    return async (req, res, next) => {
+      try {
+        await wrapped(req, res);
+      } catch (err) {
+        logger.error('Route failed: ' + err.message)
+        res.json({
+          error: {
+            code: 500,
+            message: 'Internal server error'
+          }
+        });
+      } finally {
+        next(); // exec any post-middleware
+      }
     }
-  });
+  }
 
-  app.get('/xyz/:element/:cluster', async (req, res, next) => {
-    try {
-      const values = await knex('xyz').where({
-        element: req.params.element,
-        cluster_size: req.params.cluster
-      }).select([
-        'element',
-        'filename',
-        'raw',
-        'coordinates',
-        'cluster_size as clusterSize',
-        'energy'
-      ]);
-      res.json({ values });
-    } catch (err) {
-      res.json({
-        error: {
-          code: 500,
-          message: 'Internal server error'
-        }
-      });
-    } finally {
-      next(); // exec any post-middleware
-    }
-  });
-  // post-middleware
-  app.use((req, res, next) => {
-    if (res.headersSent && !req.path.includes('static')) {
-      logger.info(`${req.uuid} sent with status ${res.statusCode} in ${Date.now() - req.startTime}ms`);
-    }
-    next();
-  });
+  app.get('/correlations/:element', makeHandler(async (req, res) => {
+    const values = await knex('correlation').where({ left_element: req.params.element }).select([
+      'left_element as left',
+      'right_element as right',
+      'correlation',
+    ]);
+    res.json({ values });
+  }));
+
+  app.get('/xyz/:element/:cluster', makeHandler(async (req, res) => {
+    const values = await dataLayer.getXyz(
+      req.params.element,
+      req.params.cluster
+    );
+    res.json({ values });
+  }));
+
+  // returns all xyzs, correlation, ccd, dft, info
+  app.get('/elements/:element', makeHandler(async (req, res) => {
+    const values = await dataLayer.getElement(
+      req.params.element,
+    );
+    res.json({ values });
+  }));
+  // dft, info, ccd have ids like Ag/10/1 - this is a way of accessing those directly
+  // because in the info file they reference "similar" ones via ids of that structure.
+  app.get('/ids/:element/:cluster/:structure', async(req, res) => {
+    const id = `${req.params.element}/${req.params.cluster}/${req.params.structure}`;
+    const values = await dataLayer.getInfoDftAndCcdById(id);
+    res.json({ values });
+  })
 
   app.use(express.static(path.resolve(__dirname, "../static")));
 

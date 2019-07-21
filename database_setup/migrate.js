@@ -10,7 +10,7 @@ if (fs.existsSync(dotenvPath)) {
 
 const knexLib = require('knex');
 const data = require('./lib/parse-correlations-from-csv');
-const { parseAllXyzFilesInDir } = require('./lib/parse-all-xyz-in-dir');
+const { parseFilesInDir } = require('./lib/parse-dir');
 const keys = ['DB_HOST', 'DB_USERNAME', 'DB_PASSWORD', 'DB_DATABASE', 'DB_PORT'];
 
 const missingVariables = keys.filter(key => !process.env[key]);
@@ -32,6 +32,10 @@ const knex = knexLib({
   connection: config,
   acquireConnectionTimeout: 5000 // 5s is a long time to wait for a database connection
 });
+
+// note all the filenames should only be inserted once
+// each entity tracks its original filename
+const filenamesSet = new Set();
 
 const Run = async () => {
   await knex.raw('select 1');
@@ -55,22 +59,95 @@ const Run = async () => {
   console.log('Correlation data loaded');
   console.log('Truncated existing XYZ table data');
   await knex.truncate('xyz');
-  await parseAllXyzFilesInDir(path.resolve(__dirname, './data'), async(xyzs) => {
-    console.log(`Read ${xyzs.length} XYZs from disk`);
-    const xyzsMappedForDatabase = xyzs.map(file => {
-        return {
-          element: file.coordinates[0].element, // for now assume only the same elements bound together
-          filename: file.name,
-          raw: file.raw,
-          energy: file.energy,
-          cluster_size: file.clusterSize,
-          coordinates: JSON.stringify(file.coordinates)
-        };
+  await knex.truncate('info');
+  await knex.truncate('ccd_dft');
+
+  let total = 0;
+  await parseFilesInDir(path.resolve(__dirname, './data'), async(results) => {
+    total += results.length;
+    console.log('Loading', results.length,' XYZs, INFOs, DFTs and CCDs from disk.', 'Total: ', total);
+    const kinds = {
+      xyz: {
+        data: [],
+        mapper: data => ({
+          element: data.coordinates[0].element, // for now assume only the same elements bound together
+          filename: path.parse(data.filename).base,
+          raw: data.raw,
+          energy: data.energy,
+          cluster_size: data.clusterSize,
+          coordinates: JSON.stringify(data.coordinates)
+        })
+      },
+      info: {
+        data: [],
+        //{nMinusOne, nPlusOne, gap, valence, similarities}
+        mapper: data => ({
+          id: data.id,
+          filename: path.parse(data.filename).base,
+          element: data.id.split('/').shift(),
+          minus_one: data.nMinusOne,
+          plus_one: data.nPlusOne,
+          homo_lumo_gap: data.gap,
+          valence_electrons: data.valence,
+          similarities: JSON.stringify(data.similarities),
+          raw: data.raw,
+        })
+      },
+      dft: {
+        data: [],
+        mapper: data => ({
+          id: data.id,
+          kind: 'dft',
+          filename: path.parse(data.filename).base,
+          element: data.id.split('/').shift(),
+          source: data.source,
+          locations: JSON.stringify(data.locations),
+          raw: data.raw
+        })
+      },
+      ccd: {
+        data: [],
+        mapper: data => ({
+          id: data.id,
+          kind: 'ccd',
+          filename: path.parse(data.filename).base,
+          element: data.id.split('/').shift(),
+          source: data.source,
+          locations: JSON.stringify(data.locations),
+          raw: data.raw
+        })
+      },
+    }
+
+    // bucket each kind of parse result so they can be inserted into different tables
+    results.forEach(r => {
+      if (!r.kind) {
+        console.log('unknown kind', r.kind);
+        return;
+      }
+      if (!r.data.filename) {
+        console.log('unknown filename', r);
+        return;
+      }
+      if (filenamesSet.has(path.parse(r.data.filename).base)) {
+        console.log('Skipping duplicate insert', path.parse(r.data.filename).base)
+        return;
+      }
+      filenamesSet.add(path.parse(r.data.filename).base)
+      kinds[r.kind].data.push(kinds[r.kind].mapper(r.data)); 
     });
-    while (xyzsMappedForDatabase.length > 0) {
-      await knex('xyz').insert(xyzsMappedForDatabase.splice(0, 1));
-    };
-    console.log('XYZ loaded into postgres');
+
+    const allKinds = Object.keys(kinds);
+
+    for (let kind of allKinds) {
+      while (kinds[kind].data.length > 0) {
+        const isDftCcd = ['dft', 'ccd'].includes(kind);
+        const table = isDftCcd ? 'ccd_dft' : kind;
+        await knex(table).insert(kinds[kind].data.splice(0, 400));
+      };
+    }
+    console.log('Data files loaded into postgres');
+
   });
   console.log('Completed successfully');
   process.exit(0);

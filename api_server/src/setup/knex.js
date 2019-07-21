@@ -24,8 +24,12 @@ const tryInitialize = async () => {
 
   return knex;
 };
+let _knex = null;
 
 module.exports.initialize = async () => {
+  if (_knex) {
+    return _knex;
+  }
   const maxAttempts = 10;
   for (let i = 0; i < maxAttempts; ++i) {
     try {
@@ -37,6 +41,9 @@ module.exports.initialize = async () => {
         port: config.pgport
       });
       const knex = await tryInitialize();
+      if (knex) {
+        _knex = knex;
+      }
       setInterval(async () => {
         try {
           await knex.raw('select 1'); // test connection success

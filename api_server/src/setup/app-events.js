@@ -8,7 +8,8 @@ const EventEmitter = require('events').EventEmitter;
 
 const systemEvents = new EventEmitter();
 
-const cleanupHooks = [];
+const cleanupHooks = [
+];
 
 // debounce emissions of exit so no need for statefulness around
 // "shutting down". just handle the exit event once
@@ -21,14 +22,16 @@ systemEvents.once('exit', async (code = 0) => {
       // e.g. database destroy failed when database credentials invalid
     }
   }
-  logger.destroy();
-  logger.once('close', () => {
+  logger.log('info', 'Shutting down', () => {
     process.exit(code); // non-zero exit codes take their proper effect
   });
 });
 
 const appEvents = {
-  exit: (code) => systemEvents.emit('exit', code),
+  exit: (code) => {
+    appEvents.exiting = true;
+    systemEvents.emit('exit', code)
+  },
   registerForCleanup: (cleanup) => cleanupHooks.push(cleanup)
 };
 

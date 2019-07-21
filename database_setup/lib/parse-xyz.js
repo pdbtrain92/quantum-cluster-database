@@ -31,6 +31,14 @@ module.exports.parse = async (filepath) => {
       y: pieces[2],
       z: pieces[3]
     }
-  })
-  return { clusterSize, energy, coordinates, raw: contents, name: filename };
+  });
+  if (!coordinates || coordinates.length === 0) {
+    console.log('Invalid XYZ - missing coordinates', filename)
+    return;
+  }
+  if (energy == null) {
+    console.log('Invalid XYZ - missing energy', filename)
+    return;
+  }
+  return { clusterSize, energy, coordinates, raw: contents, filename };
 };
