@@ -15,6 +15,19 @@ module.exports.getXyz = async(element, clusterSize) => {
     'energy'
   ]);
 };
+module.exports.getXyzById = async(id) => {
+  const knex = await initialize();
+  return knex('xyz').where({
+    id: id
+  }).select([
+    'element',
+    'filename',
+    'raw',
+    'coordinates',
+    'cluster_size as clusterSize',
+    'energy'
+  ]);
+}
 // returns xyz, correlations, dft, ccd, info
 module.exports.getElement = async(element) => {
   const knex = await initialize();

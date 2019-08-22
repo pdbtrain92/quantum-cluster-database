@@ -70,6 +70,7 @@ const Run = async () => {
       xyz: {
         data: [],
         mapper: data => ({
+          id: data.id,
           element: data.coordinates[0].element, // for now assume only the same elements bound together
           filename: path.parse(data.filename).base,
           raw: data.raw,

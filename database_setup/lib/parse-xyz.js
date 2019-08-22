@@ -10,6 +10,13 @@ const stat = util.promisify(fs.stat);
 
 module.exports.parse = async (filepath) => {
   const filename = path.parse(filepath).base;
+  const validFileNameRegexp = /(\w+)-(\d+)-(\d+).xyz/
+  if (!validFileNameRegexp.test(filename)) {
+    console.log(`Invalid XYZ filename does not match ${validFileNameRegexp.source}`, filename);
+    return;
+  }
+  const id = filename.match(validFileNameRegexp).slice(1).join('/');
+
   const contents = (await readFile(filepath)).toString('utf8');
   if (contents.trim().length === 0){
     console.log('parsed file is empty', filepath);
@@ -40,5 +47,5 @@ module.exports.parse = async (filepath) => {
     console.log('Invalid XYZ - missing energy', filename)
     return;
   }
-  return { clusterSize, energy, coordinates, raw: contents, filename };
+  return { id, clusterSize, energy, coordinates, raw: contents, filename };
 };

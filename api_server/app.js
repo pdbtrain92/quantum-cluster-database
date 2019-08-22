@@ -74,6 +74,12 @@ async function Run() {
     res.json({ values });
   }));
 
+  app.get('/xyz-id/:element/:cluster/:structure', makeHandler(async (req, res) => {
+    const id = `${req.params.element}/${req.params.cluster}/${req.params.structure}`;
+    const values = await dataLayer.getXyzById(id);
+    res.json({ values });
+  }));
+
   app.get('/xyz/:element/:cluster', makeHandler(async (req, res) => {
     const values = await dataLayer.getXyz(
       req.params.element,
