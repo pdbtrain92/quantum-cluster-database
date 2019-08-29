@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # pattern to search for
-PATTERN="*.xyz"
+PATTERN="*.jpg"
 # destination dir
 TO_DIR=$(pwd)/static/images
 # dir to recursively search for files
