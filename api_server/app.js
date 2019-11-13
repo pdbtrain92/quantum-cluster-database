@@ -65,6 +65,8 @@ async function Run() {
     }
   }
 
+  app.use(express.static(path.resolve(__dirname, "../static")));
+
   app.get('/correlations/:element', makeHandler(async (req, res) => {
     const values = await knex('correlation').where({ left_element: req.params.element }).select([
       'left_element as left',
@@ -103,7 +105,12 @@ async function Run() {
     res.json({ values });
   })
 
-  app.use(express.static(path.resolve(__dirname, "../static")));
+//static old location
+
+  app.get('/view', async(req, res) => {
+    //res.send("working");
+    res.sendFile(path.join(__dirname, '../static', 'element-view.html'));
+  })
 
   app.listen(config.port, () => {
     logger.info(`App listening on port ${config.port}`);

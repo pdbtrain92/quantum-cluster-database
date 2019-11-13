@@ -63,6 +63,7 @@ const Run = async () => {
   await knex.truncate('ccd_dft');
 
   let total = 0;
+  console.log(path.resolve(__dirname, './data'));
   await parseFilesInDir(path.resolve(__dirname, './data'), async(results) => {
     total += results.length;
     console.log('Loading', results.length,' XYZs, INFOs, DFTs and CCDs from disk.', 'Total: ', total);
@@ -135,7 +136,7 @@ const Run = async () => {
         return;
       }
       filenamesSet.add(path.parse(r.data.filename).base)
-      kinds[r.kind].data.push(kinds[r.kind].mapper(r.data)); 
+      kinds[r.kind].data.push(kinds[r.kind].mapper(r.data));
     });
 
     const allKinds = Object.keys(kinds);

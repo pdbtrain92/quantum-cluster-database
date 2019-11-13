@@ -37,13 +37,6 @@ let visualization = function(y) {
   }).catch(err => {
     console.error( "Failed to load XYZ " + y.id + ": " + err );
   })
-  // jQuery.ajax( xyzPath, {
-  //   success: function(data) {
-  //   },
-  //   error: function(hdr, status, err) {
-  //     console.error( "Failed to load XYZ " + xyzPath + ": " + err );
-  //   },
-  // });
 };
 
 //set up row
@@ -113,6 +106,7 @@ async function cachedLookupXyz(el, size) {
   }
   return xyzsCache[el][size];
 }
+
 async function cachedLookupXyzRawByFilename(filename) {
   let [el, size] = filename.split('-');
   const response = await cachedLookupXyz(el.toLowerCase(), size);
@@ -123,10 +117,36 @@ async function cachedLookupXyzRawByFilename(filename) {
     throw new Error('could not load ' + filename);
   }
 }
+
+/*let txtsCache = {};
+async function cachedLookupTxt(el, size, structure) {
+  if (!txtsCache[el]) { txtsCache[el] = {}; }
+  if (!txtsCache[el][size]) { txtsCache[el][size] = {}; }
+  if (!txtsCache[el][size][structure]) {
+    const txtres = await fetch('ids/' + el + '/' + size + '/' + structure, {
+      signal: generalAbortController.signal
+    });
+    txtsCache[el][size][structure] = await txtres.json()
+  }
+  return txtsCache[el][size][structure];
+}
+
+async function cachedLookupTxtRawByFilename(txtFilename) {
+  let [el, size, structure] = txtFilename.split('-');
+  const responseTxt = await cachedLookupTxt(el.toLowerCase(), size, structure);
+  console.log(responseTxt);
+  const matchTxt = responseTxt.values.find(v => v.filename === txtFilename);
+  if (matchTxt) {
+    return matchTxt.raw;
+  } else {
+    throw new Error('could not load ' + filename);
+  }
+}*/
 // fetch data and run
 let correlations = async function(x) {
+  console.log(x);
   let id = x.id;
-  if (currentElement !== id) {
+  if (currentElement !== id) {` `
     generalAbortController.abort();
     generalAbortController = new AbortController();
   }
@@ -156,4 +176,100 @@ let tableBuild = async function(id){
       })
   };
   return Promise.all(xyzRequests).catch(error => console.error('Error:', error));
+};
+
+// Detail page functionality
+
+//DO NOT WORRY ABOUT USING PROMISES
+//JUST GRAB THE JSON AND RUN
+
+/*let detailVisualization = function(y) {
+  let overlay = document.getElementById('ball-and-stick');
+  overlay.style.display = "flex";
+  // let xyzPath = '/data/' + currentElement + "/" + y.id;
+  let viewer = $3Dmol.createViewer( $('#viewer_3Dmoljs'), { backgroundColor: 'white' } );
+  cachedLookupXyzRawByFilename(y.id).then(data => {
+    let v = viewer;
+    v.addModel( data, "xyz" );                       /* load data */
+    //v.setStyle({}, {sphere: {color: 'spectrum'}});  /* style all atoms */
+    //v.zoomTo(1);                                      /* set camera */
+    //v.render();                                      /* render scene */
+    //v.zoom(0.8, 1000);                               /* slight zoom */
+  //}).catch(err => {
+    //console.error( "Failed to load XYZ " + y.id + ": " + err );
+  //})
+//};
+let precision = function(x) {
+return Number.parseFloat(x).toPrecision(6);
+}
+
+let detailStats = function(x){
+
+  //document.getElementById('energy-diff').textContent=precision(x.values.info[0][]);
+  document.getElementById('n-less-1').textContent=precision(x.values.info[0]["minusOne"]);
+  document.getElementById('n-and-1').textContent=precision(x.values.info[0]["plusOne"]);
+  document.getElementById('humo-lomo').textContent=precision(x.values.info[0]["HomoLumoGap"]);
+  document.getElementById('valence-electrons').textContent=precision(x.values.info[0]["valenceElectrons"]);
+}
+
+let coordinatesBuild = function(x){
+  let coordinateLocation = x.values[0]["coordinates"];
+  console.log(coordinateLocation);
+  for (var i=0; i < coordinateLocation.length; i++){
+    let coordinateBox = document.getElementById("coordinateDetail");
+    var coorRow = document.createElement('div');
+    coorRow.setAttribute('class', 'el-stat-box');
+    let cellArray = ['x', 'y', 'z'];
+    coordinateBox.appendChild(coorRow);
+    for (var j=0; j < 3; j++){
+      var coorCell = document.createElement('div');
+      coorCell.setAttribute('class', 'el-xyz-val');
+      coorRow.appendChild(coorCell);
+      var coorSolo = document.createElement('div');
+      let coorVal = cellArray[j];
+      //console.log(coordinateLocation[i][coorVal]);
+      coorCell.appendChild(coorSolo);
+      coorSolo.innerHTML = precision(coordinateLocation[i][coorVal]);
+    }
+  }
+}
+
+let xyzDownload = function(x){
+  let xyzDownloadLink = document.getElementById('download-xyz-detail');
+  console.log(x);
+  let extension = x.values[0]["filename"];
+  extension = extension.split('-');
+  extension[2] = extension[2].replace(".xyz", "");
+  console.log(extension);
+  let xyzFile = '/xyz-id/' + extension[0] + '/' + extension[1] + '/' + extension[2];
+  xyzDownloadLink.setAttribute('href', xyzFile);
+  xyzDownloadLink.setAttribute('download', xyzFile + '.xyz');
+}
+
+let setLabels = function(x){
+  let compositionLabel = document.getElementById('composition');
+  let structureLabel = document.getElementById('structure-id');
+  let labelVals = x.values[0]['filename'];
+  structureLabel.setAttribute('innerHTML', 'Stucture ID: ' + labelVals)
+  labelVals = labelVals.split('-');
+  compositionLabel.setAttribute('innerHTML', 'Composition: ' + labelVals[0] + '(' + labelVals[1] + ')');
+}
+
+let xyzTasks = function(x){
+  coordinatesBuild(x);
+  xyzDownload(x);
+  setLabels(x);
+};
+
+let initiate = async function(){
+
+  let detailId = 'Ag-13-3';
+  const txtResponse = await fetch('/ids/Ag/13/3');
+  const txtJson = await txtResponse.json();
+  detailStats(txtJson);
+  console.log(txtJson);
+  const xyzResponse = await fetch('/xyz-id/Ag/13/3');
+  const xyzJson = await xyzResponse.json();
+  xyzTasks(xyzJson);
+  console.log(xyzJson);
 };

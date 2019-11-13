@@ -33,10 +33,31 @@ const parsers = [
         return null;
       }
       const id = path.parse(filename).base.split('.')[0].replace('dft-', '').replace(/(\-)/gm, '/').trim();
-      const nMinusOne = (lines[0].match(/Formation energy \(N-1 -> N\):(\s?([-+]?[0-9]*\.?[0-9]*)?\s?)eV/))[1].trim() || null;
-      const nPlusOne = (lines[1].match(/Formation energy \(N\+1 -> N\):(\s?([-+]?[0-9]*\.?[0-9]*)?\s?)eV/))[1].trim() || null;
-      const gap = (lines[2].match(/HOMO-LUMO gap:(\s?([-+]?[0-9]*\.?[0-9]*)?\s?)eV/))[1].trim() || null;
-      const valence = (lines[3].match(/Number of valence electrons:\s?(\d+)?\s?electrons/))[1] || null;
+      let nMinusOne = (lines[0].match(/Formation energy \(N-1 -> N\):(\s?([-+]?[0-9]*\.?[0-9]*)?\s?)eV/)) || null;
+      if (nMinusOne){
+        nMinusOne = nMinusOne[1].trim();
+      }else{
+        nMinusOne = 'n/a';
+      };
+      let nPlusOne = (lines[1].match(/Formation energy \(N\+1 -> N\):(\s?([-+]?[0-9]*\.?[0-9]*)?\s?)eV/)) || null;
+      if (nPlusOne){
+        nPlusOne = nPlusOne[1].trim();
+      }else{
+        nPlusOne = 'n/a';
+      };
+      let gap = (lines[2].match(/HOMO-LUMO Gap: (\s?([-+]?[0-9]*\.?[0-9]*)?\s?)eV/)) || null;
+      if (gap){
+        gap = gap[1].trim();
+      }else{
+        gap = 'n/a';
+      };
+      //let valence = (lines[3].match(/Number of valence electrons:\s?(\d+)?\s?electrons/)) || null;
+      let valence = (lines[3].match(/Number of valence electrons: (\s?([-+]?[0-9]*\.?[0-9]*)?\s?)electrons/)) || null;
+      if (valence){
+        valence = valence[1].trim();
+      }else{
+        valence = 'n/a';
+      };
       const similarities = lines[4].substring('Similar structure(s): '.length).split(/\s+/gm);
       return {id, nMinusOne, nPlusOne, gap, valence, similarities, raw: contents, filename}
     }
@@ -107,4 +128,3 @@ module.exports.parseFilesInDir = async (dirPath, handler) => {
     await handler(results.filter(el => !!el));
   };
 };
-
