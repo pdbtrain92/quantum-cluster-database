@@ -1,5 +1,7 @@
 let currentElement = "";
 
+let baseURL = "localhost:3000";
+
 let generalAbortController = new AbortController();
 
 let overlayClose = function(){
@@ -23,20 +25,21 @@ let correlationLoop = function(corrArray){
 
 //visualization render
 let visualization = function(y) {
-  let overlay = document.getElementById('overlay');
+  /*let overlay = document.getElementById('overlay');
   overlay.style.display = "flex";
   // let xyzPath = '/data/' + currentElement + "/" + y.id;
+  console.log(y);
   let viewer = $3Dmol.createViewer( $('#viewer_3Dmoljs'), { backgroundColor: 'white' } );
   cachedLookupXyzRawByFilename(y.id).then(data => {
     let v = viewer;
-    v.addModel( data, "xyz" );                       /* load data */
-    v.setStyle({}, {sphere: {color: 'spectrum'}});  /* style all atoms */
-    v.zoomTo(1);                                      /* set camera */
-    v.render();                                      /* render scene */
-    v.zoom(0.8, 1000);                               /* slight zoom */
+    v.addModel( data, "xyz" );
+    v.setStyle({}, {sphere: {color: 'spectrum'}});
+    v.zoomTo(1);
+    v.render();
+    v.zoom(0.8, 1000);
   }).catch(err => {
     console.error( "Failed to load XYZ " + y.id + ": " + err );
-  })
+  })*/
 };
 
 //set up row
@@ -179,26 +182,21 @@ let tableBuild = async function(id){
 };
 
 // Detail page functionality
-
-//DO NOT WORRY ABOUT USING PROMISES
-//JUST GRAB THE JSON AND RUN
-
-/*let detailVisualization = function(y) {
+let detailVisualization = function(y) {
   let overlay = document.getElementById('ball-and-stick');
   overlay.style.display = "flex";
-  // let xyzPath = '/data/' + currentElement + "/" + y.id;
   let viewer = $3Dmol.createViewer( $('#viewer_3Dmoljs'), { backgroundColor: 'white' } );
-  cachedLookupXyzRawByFilename(y.id).then(data => {
+  cachedLookupXyzRawByFilename(y.values[0]["filename"]).then(data => {
     let v = viewer;
     v.addModel( data, "xyz" );                       /* load data */
-    //v.setStyle({}, {sphere: {color: 'spectrum'}});  /* style all atoms */
-    //v.zoomTo(1);                                      /* set camera */
-    //v.render();                                      /* render scene */
-    //v.zoom(0.8, 1000);                               /* slight zoom */
-  //}).catch(err => {
-    //console.error( "Failed to load XYZ " + y.id + ": " + err );
-  //})
-//};
+    v.setStyle({}, {sphere: {color: 'spectrum'}});  /* style all atoms */
+    v.zoomTo(1);                                      /* set camera */
+    v.render();                                      /* render scene */
+    v.zoom(0.8, 1000);                               /* slight zoom */
+  }).catch(err => {
+    console.error( "Failed to load XYZ " + y.id + ": " + err );
+  })
+};
 let precision = function(x) {
 return Number.parseFloat(x).toPrecision(6);
 }
@@ -249,16 +247,18 @@ let xyzDownload = function(x){
 let setLabels = function(x){
   let compositionLabel = document.getElementById('composition');
   let structureLabel = document.getElementById('structure-id');
-  let labelVals = x.values[0]['filename'];
-  structureLabel.setAttribute('innerHTML', 'Stucture ID: ' + labelVals)
+  let labelVals = x.values[0]['filename'].replace('.xyz','');
+  console.log('setLabels');
+  structureLabel.innerHTML = 'Stucture ID: ' + labelVals;
   labelVals = labelVals.split('-');
-  compositionLabel.setAttribute('innerHTML', 'Composition: ' + labelVals[0] + '(' + labelVals[1] + ')');
+  compositionLabel.innerHTML = 'Composition: ' + labelVals[0] + '(' + labelVals[1] + ')';
 }
 
 let xyzTasks = function(x){
   coordinatesBuild(x);
   xyzDownload(x);
   setLabels(x);
+  detailVisualization(x);
 };
 
 let initiate = async function(){
@@ -270,6 +270,6 @@ let initiate = async function(){
   console.log(txtJson);
   const xyzResponse = await fetch('/xyz-id/Ag/13/3');
   const xyzJson = await xyzResponse.json();
-  xyzTasks(xyzJson);
+  xyzTasks(xyzJson, detailId);
   console.log(xyzJson);
 };
