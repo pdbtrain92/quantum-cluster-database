@@ -23,7 +23,7 @@ let correlationLoop = function(corrArray){
     };
 };
 
-//visualization render
+/*visualization render
 let visualization = function(y) {
   /*let overlay = document.getElementById('overlay');
   overlay.style.display = "flex";
@@ -39,8 +39,8 @@ let visualization = function(y) {
     v.zoom(0.8, 1000);
   }).catch(err => {
     console.error( "Failed to load XYZ " + y.id + ": " + err );
-  })*/
-};
+  })
+};*/
 
 //set up row
 let rowBuild = function(clusterSize, clusterArrayPull){
@@ -72,7 +72,7 @@ let rowBuild = function(clusterSize, clusterArrayPull){
     var cell = document.createElement("a");
     cell.setAttribute('class', 'cluster-table-item w-inline-block');
     cell.setAttribute('id', fileName);
-    cell.setAttribute('onclick', 'visualization(this)');
+    cell.href = '/view/' + fileName.replace('.xyz','');
     var imageAdd = document.createElement("img");
     imageAdd.src = clusterImage;
     imageAdd.setAttribute('style', 'padding-bottom:12px;')
@@ -102,7 +102,7 @@ let xyzsCache = {};
 async function cachedLookupXyz(el, size) {
   if (!xyzsCache[el]) { xyzsCache[el] = {}; }
   if (!xyzsCache[el][size]) {
-    const res = await fetch('xyz/' + el + '/' + size, {
+    const res = await fetch('../xyz/' + el + '/' + size, {
       signal: generalAbortController.signal
     });
     xyzsCache[el][size] = await res.json()
@@ -183,9 +183,8 @@ let tableBuild = async function(id){
 
 // Detail page functionality
 let detailVisualization = function(y) {
-  let overlay = document.getElementById('ball-and-stick');
-  overlay.style.display = "flex";
-  let viewer = $3Dmol.createViewer( $('#viewer_3Dmoljs'), { backgroundColor: 'white' } );
+
+  let viewer = $3Dmol.createViewer( $('#ball-and-stick'), { backgroundColor: 'white' } );
   cachedLookupXyzRawByFilename(y.values[0]["filename"]).then(data => {
     let v = viewer;
     v.addModel( data, "xyz" );                       /* load data */
@@ -196,7 +195,20 @@ let detailVisualization = function(y) {
   }).catch(err => {
     console.error( "Failed to load XYZ " + y.id + ": " + err );
   })
+  let viewer2 = $3Dmol.createViewer( $('#space-fill'), { backgroundColor: 'white' } );
+  cachedLookupXyzRawByFilename(y.values[0]["filename"]).then(data => {
+    let v2 = viewer2;
+    v2.addModel( data, "xyz" );                       /* load data */
+    v2.setStyle({}, {stick: {color: 'spectrum'}});  /* style all atoms */
+    v2.zoomTo(1);                                      /* set camera */
+    v2.render();                                      /* render scene */
+    v2.zoom(0.8, 1000);                               /* slight zoom */
+  }).catch(err => {
+    console.error( "Failed to load XYZ " + y.id + ": " + err );
+  })
 };
+
+
 let precision = function(x) {
 return Number.parseFloat(x).toPrecision(6);
 }
@@ -263,13 +275,18 @@ let xyzTasks = function(x){
 
 let initiate = async function(){
 
-  let detailId = 'Ag-13-3';
-  const txtResponse = await fetch('/ids/Ag/13/3');
+  let detailId = window.location.pathname;
+  detailId = detailId.replace('/view/','');
+  let hyphenId = detailId;
+  detailId = detailId.split('-');
+  detailId = detailId.join('/');
+  console.log('detailId=' + detailId);
+  const txtResponse = await fetch('/ids/' + detailId);
   const txtJson = await txtResponse.json();
   detailStats(txtJson);
   console.log(txtJson);
-  const xyzResponse = await fetch('/xyz-id/Ag/13/3');
+  const xyzResponse = await fetch('/xyz-id/' + detailId);
   const xyzJson = await xyzResponse.json();
-  xyzTasks(xyzJson, detailId);
+  xyzTasks(xyzJson);
   console.log(xyzJson);
 };
