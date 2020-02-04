@@ -26,20 +26,20 @@
     <div class="el-col w-col w-col-5 w-col-stack">
       <div data-duration-in="300" data-duration-out="100" class="tabs w-tabs">
         <div class="viz-toggle w-tab-menu">
-          <a data-w-tab="Ball and Stick Model" class="viz-toggle-link w-inline-block w-tab-link w--current">
+          <button class="viz-toggle-link  viz-link-active" onclick="vizToggle('space-fill')">
             <div>Space Fill</div>
-          </a>
-          <a data-w-tab="Space-Fill Model" class="viz-toggle-link w-inline-block w-tab-link">
+          </button>
+          <button class="viz-toggle-link" onclick="vizToggle('ball-and-stick')">
             <div>Ball &amp; Stick</div>
-          </a>
+          </button>
         </div>
-        <div class="el-visual w-tab-content">
-          <div data-w-tab="Ball and Stick Model" id="ball-and-stick" class="tab-content w-tab-pane w--tab-active"></div>
-          <div data-w-tab="Space-Fill Model" id="space-fill" class="w-tab-pane"></div>
+        <div class="el-visual">
+          <div id="ball-and-stick" class="tab-content"></div>
+          <div id="space-fill" class="tab-content"></div>
         </div>
       </div>
       <div class="el-ref-box">
-        <a href="#" class="el-lib-links w-inline-block">
+        <a href="" class="el-lib-links w-inline-block">
           <div>References</div>
         </a>
         <a href="#" class="el-lib-links w-inline-block">
@@ -53,7 +53,7 @@
           <div>Energy Above Lowest Energy Structure</div>
         </div>
         <div class="el-stat-value">
-          <div id="energy-diff">XXXXXXXXXXX</div>
+          <div id="energy-diff">XXX</div>
           <div>eV / atom</div>
         </div>
       </div>
@@ -62,7 +62,7 @@
           <div>Formation Energy<br>[stable(N-1) -&gt; N]</div>
         </div>
         <div class="el-stat-value">
-          <div id="n-less-1">XXXXXXXXXXX</div>
+          <div id="n-less-1">XXX</div>
           <div>eV / atom</div>
         </div>
       </div>
@@ -71,7 +71,7 @@
           <div>Formation Energy<br>[stable(N+1) -&gt; N]</div>
         </div>
         <div class="el-stat-value">
-          <div id="n-and-1">XXXXXXXXXXX</div>
+          <div id="n-and-1">XXX</div>
           <div>eV / atom</div>
         </div>
       </div>
@@ -80,7 +80,7 @@
           <div>HOMO-LUMO Gap</div>
         </div>
         <div class="el-stat-value">
-          <div id="humo-lomo">XXXXXXXXXXX</div>
+          <div id="humo-lomo">XXX</div>
           <div>eV</div>
         </div>
       </div>
@@ -89,8 +89,16 @@
           <div># of Valence Electrons</div>
         </div>
         <div class="el-stat-value">
-          <div id="valence-electrons">XXXXXXXXXXX</div>
+          <div id="valence-electrons">XXX</div>
           <div>electrons</div>
+        </div>
+      </div>
+      <div class="el-stat-box">
+        <div class="el-stat-label">
+          <div>Similar Structures</div>
+        </div>
+        <div class="el-stat-value">
+          <div id="similar-structures"></div>
         </div>
       </div>
     </div>
@@ -124,6 +132,22 @@
   <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.4.1.min.220afd743d.js" type="text/javascript" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
   <script src="../js/webflow.js" type="text/javascript"></script>
   <script src="https://3Dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+  <script>
+  function vizToggle(lbl) {
+    var i, x, tablinks;
+    x = document.getElementsByClassName("tab-content");
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("viz-toggle-link");
+    for (i = 0; i < x.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" viz-link-active", "");
+    }
+    document.getElementById(lbl).style.display = "block";
+    event.currentTarget.className += " viz-link-active";
+    console.log("step 2");
+}
+</script>
   <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
 </body>
 </html>

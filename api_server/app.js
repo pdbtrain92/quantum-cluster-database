@@ -107,7 +107,7 @@ async function Run() {
 
 //static old location
 
-  app.get('/views/:id', async(req, res) => {
+  app.get('/view/:id', async(req, res) => {
     //res.send("working");
     res.sendFile(path.join(__dirname, '../static', 'element-view.html'));
   })

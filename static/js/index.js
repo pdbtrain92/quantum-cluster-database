@@ -23,25 +23,6 @@ let correlationLoop = function(corrArray){
     };
 };
 
-/*visualization render
-let visualization = function(y) {
-  /*let overlay = document.getElementById('overlay');
-  overlay.style.display = "flex";
-  // let xyzPath = '/data/' + currentElement + "/" + y.id;
-  console.log(y);
-  let viewer = $3Dmol.createViewer( $('#viewer_3Dmoljs'), { backgroundColor: 'white' } );
-  cachedLookupXyzRawByFilename(y.id).then(data => {
-    let v = viewer;
-    v.addModel( data, "xyz" );
-    v.setStyle({}, {sphere: {color: 'spectrum'}});
-    v.zoomTo(1);
-    v.render();
-    v.zoom(0.8, 1000);
-  }).catch(err => {
-    console.error( "Failed to load XYZ " + y.id + ": " + err );
-  })
-};*/
-
 //set up row
 let rowBuild = function(clusterSize, clusterArrayPull){
   let row = document.getElementById('table-row-' + clusterSize);
@@ -121,30 +102,6 @@ async function cachedLookupXyzRawByFilename(filename) {
   }
 }
 
-/*let txtsCache = {};
-async function cachedLookupTxt(el, size, structure) {
-  if (!txtsCache[el]) { txtsCache[el] = {}; }
-  if (!txtsCache[el][size]) { txtsCache[el][size] = {}; }
-  if (!txtsCache[el][size][structure]) {
-    const txtres = await fetch('ids/' + el + '/' + size + '/' + structure, {
-      signal: generalAbortController.signal
-    });
-    txtsCache[el][size][structure] = await txtres.json()
-  }
-  return txtsCache[el][size][structure];
-}
-
-async function cachedLookupTxtRawByFilename(txtFilename) {
-  let [el, size, structure] = txtFilename.split('-');
-  const responseTxt = await cachedLookupTxt(el.toLowerCase(), size, structure);
-  console.log(responseTxt);
-  const matchTxt = responseTxt.values.find(v => v.filename === txtFilename);
-  if (matchTxt) {
-    return matchTxt.raw;
-  } else {
-    throw new Error('could not load ' + filename);
-  }
-}*/
 // fetch data and run
 let correlations = async function(x) {
   console.log(x);
@@ -188,18 +145,19 @@ let detailVisualization = function(y) {
   cachedLookupXyzRawByFilename(y.values[0]["filename"]).then(data => {
     let v = viewer;
     v.addModel( data, "xyz" );                       /* load data */
-    v.setStyle({}, {sphere: {color: 'spectrum'}});  /* style all atoms */
+    v.setStyle({}, {stick: {color: 'spectrum'}});  /* style all atoms */
     v.zoomTo(1);                                      /* set camera */
     v.render();                                      /* render scene */
     v.zoom(0.8, 1000);                               /* slight zoom */
   }).catch(err => {
     console.error( "Failed to load XYZ " + y.id + ": " + err );
   })
+
   let viewer2 = $3Dmol.createViewer( $('#space-fill'), { backgroundColor: 'white' } );
   cachedLookupXyzRawByFilename(y.values[0]["filename"]).then(data => {
     let v2 = viewer2;
     v2.addModel( data, "xyz" );                       /* load data */
-    v2.setStyle({}, {stick: {color: 'spectrum'}});  /* style all atoms */
+    v2.setStyle({}, {sphere: {color: 'spectrum'}});  /* style all atoms */
     v2.zoomTo(1);                                      /* set camera */
     v2.render();                                      /* render scene */
     v2.zoom(0.8, 1000);                               /* slight zoom */
@@ -216,10 +174,21 @@ return Number.parseFloat(x).toPrecision(6);
 let detailStats = function(x){
 
   //document.getElementById('energy-diff').textContent=precision(x.values.info[0][]);
+  console.log(x);
   document.getElementById('n-less-1').textContent=precision(x.values.info[0]["minusOne"]);
   document.getElementById('n-and-1').textContent=precision(x.values.info[0]["plusOne"]);
   document.getElementById('humo-lomo').textContent=precision(x.values.info[0]["HomoLumoGap"]);
   document.getElementById('valence-electrons').textContent=precision(x.values.info[0]["valenceElectrons"]);
+  if (x.values.info[0]["similarities"]){
+    let similarStructures = x.values.info[0]["similarities"];
+    similarStructures.forEach(function(e){
+      var similarListItemLink = document.createElement('a');
+      similarListItemLink.textContent = e + ' ';
+      let listItemId = e.split('/').join('-')
+      similarListItemLink.href = '/view/' + listItemId;
+      document.getElementById('similar-structures').appendChild(similarListItemLink);
+    });
+  }
 }
 
 let coordinatesBuild = function(x){
@@ -256,37 +225,58 @@ let xyzDownload = function(x){
   xyzDownloadLink.setAttribute('download', xyzFile + '.xyz');
 }
 
-let setLabels = function(x){
+let setLabels = function(x,y){
   let compositionLabel = document.getElementById('composition');
   let structureLabel = document.getElementById('structure-id');
+  let energyDiff = document.getElementById('energy-diff');
   let labelVals = x.values[0]['filename'].replace('.xyz','');
   console.log('setLabels');
   structureLabel.innerHTML = 'Stucture ID: ' + labelVals;
   labelVals = labelVals.split('-');
   compositionLabel.innerHTML = 'Composition: ' + labelVals[0] + '(' + labelVals[1] + ')';
+
+  //Energy above lowest energy structures
+  let clusterArrayViz = '../xyz/' + labelVals[0] + '/' + labelVals[1];
+  //let sortVals = grabAllCluster(clusterArrayViz);
+  //const clusterArraySort = fetch(clusterArrayViz);
+  //const clusterArraySortJson = clusterArraySort.json();
+  //console.log(clusterArraySort);
+  y.values.sort(function(a, b) {
+    return a.energy - b.energy;
+  });
+  let firstVal = y.values[0];
+  let compareEnergy = firstVal.energy;
+  console.log('compare energy ' + compareEnergy);
+  let currentEnergy = x.values[0]["energy"];
+  console.log(x.values[0]);
+  let diffEnergy = currentEnergy - compareEnergy;
+  console.log(diffEnergy);
+  document.getElementById('energy-diff').textContent=precision(diffEnergy);
 }
 
-let xyzTasks = function(x){
+let xyzTasks = function(x,y){
   coordinatesBuild(x);
   xyzDownload(x);
-  setLabels(x);
-  detailVisualization(x);
+  setLabels(x,y);
+  detailVisualization(x)
 };
 
 let initiate = async function(){
 
   let detailId = window.location.pathname;
   detailId = detailId.replace('/view/','');
-  let hyphenId = detailId;
+  let hyphenId = detailId.split('-');
   detailId = detailId.split('-');
   detailId = detailId.join('/');
   console.log('detailId=' + detailId);
   const txtResponse = await fetch('/ids/' + detailId);
   const txtJson = await txtResponse.json();
+  const clusterArraySort = await fetch('/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
+  const clusterArraySortJson = await clusterArraySort.json();
   detailStats(txtJson);
   console.log(txtJson);
   const xyzResponse = await fetch('/xyz-id/' + detailId);
   const xyzJson = await xyzResponse.json();
-  xyzTasks(xyzJson);
+  xyzTasks(xyzJson, clusterArraySortJson);
   console.log(xyzJson);
 };
