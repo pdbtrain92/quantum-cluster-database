@@ -1,6 +1,6 @@
 let currentElement = "";
 
-let baseURL = "localhost:3000";
+let baseURL = "quantumclusterdatabase_TEST";
 
 let generalAbortController = new AbortController();
 
@@ -269,13 +269,13 @@ let initiate = async function(){
   detailId = detailId.split('-');
   detailId = detailId.join('/');
   console.log('detailId=' + detailId);
-  const txtResponse = await fetch('/ids/' + detailId);
+  const txtResponse = await fetch('/' + baseURL + '/ids/' + detailId);
   const txtJson = await txtResponse.json();
-  const clusterArraySort = await fetch('/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
+  const clusterArraySort = await fetch('/' + baseURL + '/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
   const clusterArraySortJson = await clusterArraySort.json();
   detailStats(txtJson);
   console.log(txtJson);
-  const xyzResponse = await fetch('/xyz-id/' + detailId);
+  const xyzResponse = await fetch('/' + baseURL + '/xyz-id/' + detailId);
   const xyzJson = await xyzResponse.json();
   xyzTasks(xyzJson, clusterArraySortJson);
   console.log(xyzJson);
