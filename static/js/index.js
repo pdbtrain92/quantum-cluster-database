@@ -264,7 +264,7 @@ let xyzTasks = function(x,y){
 let initiate = async function(){
 
   let detailId = window.location.pathname;
-  detailId = detailId.replace('/view/','');
+  detailId = detailId.replace('/' + baseURL + '/view/','');
   let hyphenId = detailId.split('-');
   detailId = detailId.split('-');
   detailId = detailId.join('/');
