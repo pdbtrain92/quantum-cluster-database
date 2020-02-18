@@ -221,8 +221,9 @@ let xyzDownload = function(x){
   extension[2] = extension[2].replace(".xyz", "");
   console.log(extension);
   let xyzFile = '/' + baseURL + '/xyz-id/' + extension[0] + '/' + extension[1] + '/' + extension[2];
-  xyzDownloadLink.setAttribute('href', xyzFile["raw"]);
-  xyzDownloadLink.setAttribute('download', xyzFile["raw"]);
+  //let xyzFileFinal = xyzFile["raw"];
+  xyzDownloadLink.setAttribute('href', xyzFile);
+  xyzDownloadLink.setAttribute('download', xyzFile);
 }
 
 let setLabels = function(x,y){
