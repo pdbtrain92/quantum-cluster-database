@@ -1,6 +1,6 @@
 http://muellergroup.jhu.edu/quantumclusterdatabase_TEST/process.env.NODE_ENV = 'production'; // turn off any libraries defaulting to debug mode
 
-const baseURL = "quantumclusterdatabase_TEST";
+const baseURL = 'quantumclusterdatabase_TEST';
 const fs = require('fs');
 const path = require('path');
 const dotenvPath = path.resolve(__dirname, '../.env');
