@@ -220,7 +220,7 @@ let xyzDownload = function(x){
   extension = extension.split('-');
   extension[2] = extension[2].replace(".xyz", "");
   console.log(extension);
-  let xyzFile = '/xyz-id/' + extension[0] + '/' + extension[1] + '/' + extension[2];
+  let xyzFile = '/' + baseURL + '/xyz-id/' + extension[0] + '/' + extension[1] + '/' + extension[2];
   xyzDownloadLink.setAttribute('href', xyzFile);
   xyzDownloadLink.setAttribute('download', xyzFile + '.xyz');
 }
