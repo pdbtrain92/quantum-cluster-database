@@ -1,6 +1,5 @@
 http://muellergroup.jhu.edu/quantumclusterdatabase_TEST/process.env.NODE_ENV = 'production'; // turn off any libraries defaulting to debug mode
 
-const baseURL = 'quantumclusterdatabase_TEST';
 const fs = require('fs');
 const path = require('path');
 const dotenvPath = path.resolve(__dirname, '../.env');
@@ -107,7 +106,7 @@ async function Run() {
 
 //static old location
 
-  app.get('/' + baseURL + '/view/:id', async(req, res) => {
+  app.get('/quantumclusterdatabase_TEST/view/:id', async(req, res) => {
     //res.send("working");
     res.sendFile(path.join(__dirname, '../static', 'element-view.html'));
   })
