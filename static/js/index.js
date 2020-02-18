@@ -53,7 +53,7 @@ let rowBuild = function(clusterSize, clusterArrayPull){
     var cell = document.createElement("a");
     cell.setAttribute('class', 'cluster-table-item w-inline-block');
     cell.setAttribute('id', fileName);
-    cell.href = '/view/' + fileName.replace('.xyz','');
+    cell.href = '/' + baseURL + /view/' + fileName.replace('.xyz','');
     var imageAdd = document.createElement("img");
     imageAdd.src = clusterImage;
     imageAdd.setAttribute('style', 'padding-bottom:12px;')
