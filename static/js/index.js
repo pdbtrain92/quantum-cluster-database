@@ -83,7 +83,7 @@ let xyzsCache = {};
 async function cachedLookupXyz(el, size) {
   if (!xyzsCache[el]) { xyzsCache[el] = {}; }
   if (!xyzsCache[el][size]) {
-    const res = await fetch('quantumclusterdatabase_TEST/xyz/' + el + '/' + size, {
+    const res = await fetch('/' + baseURL + /xyz/' + el + '/' + size, {
       signal: generalAbortController.signal
     });
     xyzsCache[el][size] = await res.json()
@@ -236,7 +236,7 @@ let setLabels = function(x,y){
   compositionLabel.innerHTML = 'Composition: ' + labelVals[0] + '(' + labelVals[1] + ')';
 
   //Energy above lowest energy structures
-  let clusterArrayViz = 'quantumclusterdatabase_TEST/xyz/' + labelVals[0] + '/' + labelVals[1];
+  let clusterArrayViz = '/' + baseURL + /xyz/' + labelVals[0] + '/' + labelVals[1];
   //let sortVals = grabAllCluster(clusterArrayViz);
   //const clusterArraySort = fetch(clusterArrayViz);
   //const clusterArraySortJson = clusterArraySort.json();
