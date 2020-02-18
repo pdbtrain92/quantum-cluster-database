@@ -1,4 +1,4 @@
-http://muellergroup.jhu.edu/quantumclusterdatabase_TEST/process.env.NODE_ENV = 'production'; // turn off any libraries defaulting to debug mode
+process.env.NODE_ENV = 'production'; // turn off any libraries defaulting to debug mode
 
 const fs = require('fs');
 const path = require('path');
