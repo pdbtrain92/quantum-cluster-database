@@ -220,10 +220,11 @@ let xyzDownload = function(x){
   extension = extension.split('-');
   extension[2] = extension[2].replace(".xyz", "");
   console.log(extension);
-  let xyzFile = '/' + baseURL + '/xyz-id/' + extension[0] + '/' + extension[1] + '/' + extension[2];
-  //let xyzFileFinal = xyzFile["raw"];
-  xyzDownloadLink.setAttribute('href', xyzFile);
-  xyzDownloadLink.setAttribute('download', xyzFile);
+  let xyzFile = await fetch( '/' + baseURL + '/xyz-id/' + extension[0] + '/' + extension[1] + '/' + extension[2]);
+  let xyzFileJson = await xyzFile.json();
+  let xyzFileFinal = xyzFileJson["raw"];
+  xyzDownloadLink.setAttribute('href', xyzFileFinal);
+  xyzDownloadLink.setAttribute('download', xyzFileFinal);
 }
 
 let setLabels = function(x,y){
