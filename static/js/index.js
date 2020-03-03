@@ -220,10 +220,9 @@ let xyzDownload = function(x){
   extension = extension.split('-');
   extension[2] = extension[2].replace(".xyz", "");
   console.log(extension);
-  let xyzFile = await fetch( '/' + baseURL + '/xyz-id/' + extension[0] + '/' + extension[1] + '/' + extension[2]);
-  let xyzFileJson = await xyzFile.json();
-  let xyzFileFinal = xyzFileJson["raw"];
-  xyzDownloadLink.setAttribute('href', xyzFileFinal);
+  let xyzFile = extension[0] + '/' + extension[1] + '/' + extension[2] + ".xyz";
+  let xyzFileFinal = x.values[0]["raw"];
+  xyzDownloadLink.setAttribute('href', xyzFile);
   xyzDownloadLink.setAttribute('download', xyzFileFinal);
 }
 
