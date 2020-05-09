@@ -4,6 +4,10 @@ let baseURL = "quantumclusterdatabase_TEST";
 
 let generalAbortController = new AbortController();
 
+let currentEl = "";
+
+let globalLimit = 100;
+
 let overlayClose = function(){
   document.getElementById('overlay').style.display = "none";
 };
@@ -40,31 +44,36 @@ let rowBuild = function(clusterSize, clusterArrayPull){
   let lowestEnergy = firstCell.energy;
   //build cell
   //for (var i=0; i < clusterArrayPull.values.length; i++){ -> switch when slider is built
+
   for (var i=0; i < clusterArrayPull.values.length; i++){
-    let obj2 = clusterArrayPull.values[i];
-    let el = obj2.element;
-    let fileName = obj2.filename;
-    let clusterImagePath = 'images/' + fileName;
-    let clusterImage = clusterImagePath.replace("xyz", "jpg");
+    //only paint if energy is within limit
     let rawRelEnergy = (obj2.energy - lowestEnergy) * 100;
-    let relEnergy = Math.round(rawRelEnergy * 100) / 100;
-    let rawRelPerAtom = relEnergy / clusterSize;
-    let relPerAtom = Math.round(rawRelPerAtom * 100) / 100;
-    var cell = document.createElement("a");
-    cell.setAttribute('class', 'cluster-table-item w-inline-block');
-    cell.setAttribute('id', fileName);
-    cell.href = '/' + baseURL + '/view/' + fileName.replace('.xyz','');
-    var imageAdd = document.createElement("img");
-    imageAdd.src = clusterImage;
-    imageAdd.setAttribute('style', 'padding-bottom:12px;')
-    var relEnergyLabel = document.createElement("div");
-    relEnergyLabel.innerHTML = "Rel Energy = " + relEnergy + " meV";
-    var relEnergyPerAtomLabel = document.createElement("div");
-    relEnergyPerAtomLabel.innerHTML = "RE / atom = " + relPerAtom + " meV";
-    cell.appendChild(imageAdd);
-    cell.appendChild(relEnergyLabel);
-    cell.appendChild(relEnergyPerAtomLabel);
-    row.appendChild(cell);
+    if (rawRelEnergy < globalLimit) {
+      let obj2 = clusterArrayPull.values[i];
+      let el = obj2.element;
+      let fileName = obj2.filename;
+      let clusterImagePath = 'images/' + fileName;
+      let clusterImage = clusterImagePath.replace("xyz", "jpg");
+
+      let relEnergy = Math.round(rawRelEnergy * 100) / 100;
+      let rawRelPerAtom = relEnergy / clusterSize;
+      let relPerAtom = Math.round(rawRelPerAtom * 100) / 100;
+      var cell = document.createElement("a");
+      cell.setAttribute('class', 'cluster-table-item w-inline-block');
+      cell.setAttribute('id', fileName);
+      cell.href = '/' + baseURL + '/view/' + fileName.replace('.xyz','');
+      var imageAdd = document.createElement("img");
+      imageAdd.src = clusterImage;
+      imageAdd.setAttribute('style', 'padding-bottom:12px;')
+      var relEnergyLabel = document.createElement("div");
+      relEnergyLabel.innerHTML = "Rel Energy = " + relEnergy + " meV";
+      var relEnergyPerAtomLabel = document.createElement("div");
+      relEnergyPerAtomLabel.innerHTML = "RE / atom = " + relPerAtom + " meV";
+      cell.appendChild(imageAdd);
+      cell.appendChild(relEnergyLabel);
+      cell.appendChild(relEnergyPerAtomLabel);
+      row.appendChild(cell);
+    };
   };
 };
 
@@ -105,6 +114,8 @@ async function cachedLookupXyzRawByFilename(filename) {
 // fetch data and run
 let correlations = async function(x) {
   console.log(x);
+  //show rel energy limit input
+  document.getElementById("limit-wrap").style.visibility = "visible";
   let id = x.id;
   if (currentElement !== id) {` `
     generalAbortController.abort();
@@ -121,10 +132,10 @@ let correlations = async function(x) {
       headerText.innerHTML = "<strong>Currently Selected: " + elText +'<strong>' + '  Scroll down to see clusters.';
     })
     .catch(e => console.log('Error:', e))
-  await tableBuild(id);
+  await tableBuild(id, 100);
 }
 
-let tableBuild = async function(id){
+let tableBuild = async function(id, limit){
   document.getElementById('cluster-table').style.display = "flex";
   document.getElementById('pcc-box').style.display = "flex";
   let xyzRequests = [];
@@ -132,7 +143,7 @@ let tableBuild = async function(id){
     let clusterSize = i;
     cachedLookupXyz(id, i)
       .then(async (response) => {
-        rowBuild(clusterSize, response);
+        rowBuild(clusterSize, response, limit);
       })
   };
   return Promise.all(xyzRequests).catch(error => console.error('Error:', error));
@@ -260,6 +271,13 @@ let xyzTasks = function(x,y){
   xyzDownload(x);
   setLabels(x,y);
   detailVisualization(x)
+};
+
+let updateTable = function(){
+  let newLimit = document.getElementById("userLimit").value;
+  console.log("The new limit is: " + newLimit);
+  globalLimit = newLimit;
+  correlations(currentElement);
 };
 
 let initiate = async function(){

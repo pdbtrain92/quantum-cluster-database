@@ -591,6 +591,11 @@
     <div class="header-sub">muellergroup.jhu.edu/QCD</div>
     <div id="hs-replace" class="header-sub"><strong>Select an element to get started.</strong></div>
   </div>
+  <div class="input-wrapper" id="limit-wrap">
+    <label for="userLimit" style="margin:0px !important;">Relative Energy Limit in meV:</label>
+    <input type="number" id="userLimit" min="10" max="1000" value="100"></input>
+    <button class="el-lib-links" style="max-width:200px;" onclick="updateTable()">Update Table</button>
+  </div>
   <div class="cluster-table" id="cluster-table" style="display:none;">
     <div class="cluster-table-row" id='table-row-3'>
       <div class="cluster-size-label">3</div>
@@ -774,8 +779,9 @@
   <script type="text/javascript">
    function clicked(item) {
     alert($(item).attr("id"));
-   }
+    };
   </script>
+
   <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
 </body>
 </html>
