@@ -47,9 +47,10 @@ let rowBuild = function(clusterSize, clusterArrayPull){
 
   for (var i=0; i < clusterArrayPull.values.length; i++){
     //only paint if energy is within limit
+    let obj2 = clusterArrayPull.values[i];
     let rawRelEnergy = (obj2.energy - lowestEnergy) * 100;
     if (rawRelEnergy < globalLimit) {
-      let obj2 = clusterArrayPull.values[i];
+
       let el = obj2.element;
       let fileName = obj2.filename;
       let clusterImagePath = 'images/' + fileName;
