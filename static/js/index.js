@@ -277,7 +277,7 @@ let xyzTasks = function(x,y){
 let updateTable = async function(){
   let newLimit = document.getElementById("userLimit").value;
   console.log("The new limit is: " + newLimit);
-  console.log("updated");
+  console.log("updated2");
   globalLimit = newLimit;
   await tableBuild(currentElement, globalLimit);
 };
