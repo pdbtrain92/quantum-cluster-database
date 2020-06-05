@@ -133,7 +133,7 @@ let correlations = async function(x) {
       headerText.innerHTML = "<strong>Currently Selected: " + elText +'<strong>' + '  Scroll down to see clusters.';
     })
     .catch(e => console.log('Error:', e))
-  await tableBuild(id, 100);
+  await tableBuild(id, globalLimit);
 }
 
 let tableBuild = async function(id, limit){
@@ -277,8 +277,9 @@ let xyzTasks = function(x,y){
 let updateTable = function(){
   let newLimit = document.getElementById("userLimit").value;
   console.log("The new limit is: " + newLimit);
+  console.log("updated");
   globalLimit = newLimit;
-  correlations(currentElement);
+  await tableBuild(id, globalLimit);
 };
 
 let initiate = async function(){
