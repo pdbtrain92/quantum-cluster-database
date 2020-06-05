@@ -274,7 +274,7 @@ let xyzTasks = function(x,y){
   detailVisualization(x)
 };
 
-let updateTable = function(){
+let updateTable = async function(){
   let newLimit = document.getElementById("userLimit").value;
   console.log("The new limit is: " + newLimit);
   console.log("updated");
