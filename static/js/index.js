@@ -235,7 +235,7 @@ let xyzDownload = function(x){
   let xyzFile = extension[0] + '/' + extension[1] + '/' + extension[2] + ".xyz";
   let xyzFileFinal = x.values[0]["raw"];
   xyzDownloadLink.setAttribute('href', xyzFile);
-  xyzDownloadLink.setAttribute('download', xyzFileFinal);
+  xyzDownloadLink.setAttribute('download', xyzFile);
 }
 
 let setLabels = function(x,y){
