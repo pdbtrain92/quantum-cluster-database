@@ -279,7 +279,7 @@ let updateTable = async function(){
   console.log("The new limit is: " + newLimit);
   console.log("updated");
   globalLimit = newLimit;
-  await tableBuild(id, globalLimit);
+  await tableBuild(currentElement, globalLimit);
 };
 
 let initiate = async function(){
