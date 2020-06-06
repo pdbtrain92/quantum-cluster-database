@@ -232,7 +232,7 @@ let xyzDownload = function(x){
   //extension[2] = extension[2].replace(".xyz", "");
   let xyzFile = 'static/data/' + extension;
   xyzDownloadLink.setAttribute('href', xyzFile);
-  xyzDownloadLink.setAttribute('download', xyzFile);
+  console.log(xyzFile);
 }
 
 let setLabels = function(x,y){
