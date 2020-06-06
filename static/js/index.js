@@ -227,13 +227,10 @@ let coordinatesBuild = function(x){
 
 let xyzDownload = function(x){
   let xyzDownloadLink = document.getElementById('download-xyz-detail');
-  console.log(x);
   let extension = x.values[0]["filename"];
-  extension = extension.split('-');
-  extension[2] = extension[2].replace(".xyz", "");
-  console.log(extension);
-  let xyzFile = extension[0] + '/' + extension[1] + '/' + extension[2] + ".xyz";
-  let xyzFileFinal = x.values[0]["raw"];
+  //extension = extension.split('-');
+  //extension[2] = extension[2].replace(".xyz", "");
+  let xyzFile = 'static/data/' + extension;
   xyzDownloadLink.setAttribute('href', xyzFile);
   xyzDownloadLink.setAttribute('download', xyzFile);
 }
