@@ -230,7 +230,7 @@ let xyzDownload = function(x){
   let extension = x.values[0]["filename"];
   //extension = extension.split('-');
   //extension[2] = extension[2].replace(".xyz", "");
-  let xyzFile = './static/data/' + extension;
+  let xyzFile = '../static/data/' + extension;
   xyzDownloadLink.setAttribute('href', xyzFile);
   console.log(xyzFile);
 }
