@@ -4,7 +4,8 @@ set -e;
 #cd database_setup && npm run packages && npm run migrate;
 #cd ..;
 
-cd api_server && npm run packages
+# commented out and doing a manual update
+# cd api_server && npm run packages
 
 # make sure pm2 in-memory version is up to date
 echo "Updating process manager";
