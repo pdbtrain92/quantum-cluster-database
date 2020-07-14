@@ -15,7 +15,7 @@ module.exports = {
       NODE_ENV: 'production',
       SERVER_PORT: 3000,
       DB_USERNAME: 'application',
-      DB_PASSWORD: 'km8RiybqtMAh',
+      DB_PASSWORD: 'RuF!4652_NEpW.x52',
       DB_HOST: '127.0.0.1',
       DB_PORT: 5432,
       DB_DATABASE: 'app_db'
