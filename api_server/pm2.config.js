@@ -16,7 +16,7 @@ module.exports = {
       SERVER_PORT: 3000,
       DB_USERNAME: 'application',
       DB_PASSWORD: 'RuF!4652_NEpW.x52',
-      DB_HOST: '127.0.0.1',
+      DB_HOST: '128.220.253.210',
       DB_PORT: 5432,
       DB_DATABASE: 'app_db'
     }
