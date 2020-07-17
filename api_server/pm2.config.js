@@ -14,11 +14,11 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       SERVER_PORT: 3000,
-      DB_USERNAME: 'application',
-      DB_PASSWORD: 'RuF!4652_NEpW.x52',
-      DB_HOST: '127.0.0.1',
+      DB_USERNAME: 'postgres',
+      DB_PASSWORD: '123',
+      DB_HOST: 'localhost',
       DB_PORT: 5432,
-      DB_DATABASE: 'app_db'
+      DB_DATABASE: 'qcdb'
     }
   }]
 };
