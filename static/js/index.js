@@ -292,8 +292,12 @@ let initiate = async function(){
   const txtJson = await txtResponse.json();
   const clusterArraySort = await fetch('/' + baseURL + '/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
   const clusterArraySortJson = await clusterArraySort.json();
+  console.log('txtResponse = ' + txtResponse);
+  console.log('txtJson = ' + txtJson);
+  console.log('clusterArraySort = ' + clusterArraySort);
+  console.log('clusterArraySortJson = ' + clusterArraySortJson);
+  
   detailStats(txtJson);
-  console.log(txtJson);
   const xyzResponse = await fetch('/' + baseURL + '/xyz-id/' + detailId);
   const xyzJson = await xyzResponse.json();
   xyzTasks(xyzJson, clusterArraySortJson);
