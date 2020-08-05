@@ -292,7 +292,8 @@ let initiate = async function(){
   const txtResponse = await txtResponseInit;
   const txtJson = await txtResponse.json();
   console.log(txtJson);
-  const clusterArraySort = fetch('http://muellergroup.jhu.edu/' + baseURL + '/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
+  const clusterArraySortInit = fetch('http://muellergroup.jhu.edu/' + baseURL + '/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
+  const clusterArraySort = await clusterArraySortInit;
   const clusterArraySortJson = await clusterArraySort.json();
   console.log(clusterArraySortJson);
   
