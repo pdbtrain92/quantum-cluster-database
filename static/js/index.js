@@ -288,7 +288,8 @@ let initiate = async function(){
   detailId = detailId.split('-');
   detailId = detailId.join('/');
   console.log('detailId=' + detailId);
-  const txtResponse = fetch ('http://muellergroup.jhu.edu/' + baseURL + '/ids/' + detailId);
+  const txtResponseInit = fetch('http://muellergroup.jhu.edu/' + baseURL + '/ids/' + detailId);
+  const txtResponse = await txtResponseInit;
   const txtJson = await txtResponse.json();
   console.log(txtJson);
   const clusterArraySort = fetch('http://muellergroup.jhu.edu/' + baseURL + '/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
