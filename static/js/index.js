@@ -288,10 +288,10 @@ let initiate = async function(){
   detailId = detailId.split('-');
   detailId = detailId.join('/');
   console.log('detailId=' + detailId);
-  const txtResponse = await ('http://muellergroup.jhu.edu/' + baseURL + '/ids/' + detailId);
+  const txtResponse = fetch ('http://muellergroup.jhu.edu/' + baseURL + '/ids/' + detailId);
   const txtJson = await txtResponse.json();
   console.log(txtJson);
-  const clusterArraySort = await fetch('http://muellergroup.jhu.edu/' + baseURL + '/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
+  const clusterArraySort = fetch('http://muellergroup.jhu.edu/' + baseURL + '/xyz/' + hyphenId[0] + '/' + hyphenId[1]);
   const clusterArraySortJson = await clusterArraySort.json();
   console.log(clusterArraySortJson);
   
